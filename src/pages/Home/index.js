@@ -3,6 +3,25 @@ import ReactECharts from "echarts-for-react";
 // @import styles
 import styles from "./index.module.scss";
 
+const colorMap = {
+  Main: "#B798F5",
+  Solar: "#02E10C",
+  DG: "#403F3D",
+  Battery: "#FDE602",
+  "Solar+Battery": "#86B0FF",
+  "Battery+Solar": "#86B0FF",
+  "Main+Solar": "#7243D0",
+  "Main+Battery": "#32864B",
+  "Main+Solar+Battery": "#8BC486",
+  "DG+Solar": "red",
+  "Solar+DG": "red",
+  "DG+Battery": "magenta",
+  "Battery+DG": "magenta",
+  "DG+Solar+Battery": "cyan",
+  "DG+Battery+Solar": "cyan",
+  Undetermined: "#BBE3FD",
+  empty: "white",
+};
 
 const generateXaxis = () => {
   var startTime = new Date();
@@ -182,6 +201,9 @@ const PowerSourceChart = () => {
         dataPoints.push({
           value: [xTime, yDate, sourceTag, timeStamp],
           symbol: "rect",
+          itemStyle: {
+            color: getColor(sourceTag),
+          },
         });
       }
       option.yAxis.data = yAxisData;
@@ -189,6 +211,11 @@ const PowerSourceChart = () => {
     }
     return option;
   };
+
+  const getColor = (sourceTag) => {
+    return colorMap[sourceTag] || "#000000";
+  };
+
   return (
     <div className={styles.homePage}>
       <ReactECharts option={generateOption()}/>;
