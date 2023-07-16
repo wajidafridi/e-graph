@@ -163,6 +163,30 @@ const PowerSourceChart = () => {
         },
       ],
     };
+
+    const yAxisData = [];
+    const dataPoints = [];
+
+    if (chartData && chartData.length > 0) {
+      for (let index = 0; index < chartData.length; index++) {
+        const item = chartData[index];
+        const yDate = item.date;
+        const xTime = item.minute_window;
+        const timeStamp = item.timeStamp;
+        const sourceTag = item.sourceTag;
+
+        if (!yAxisData.includes(yDate)) {
+          yAxisData.push(yDate);
+        }
+
+        dataPoints.push({
+          value: [xTime, yDate, sourceTag, timeStamp],
+          symbol: "rect",
+        });
+      }
+      option.yAxis.data = yAxisData;
+      option.series[0].data = dataPoints;
+    }
     return option;
   };
   return (
