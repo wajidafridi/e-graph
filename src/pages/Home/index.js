@@ -10,7 +10,7 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <div className={`${styles.homePage}`}>
+    <div className={styles.homePage}>
       Home page
     </div>
   );
