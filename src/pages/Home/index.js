@@ -23,6 +23,17 @@ const colorMap = {
   empty: "white",
 };
 
+const generateMissingData = (dateTimeString) => {
+  const updatedDateTime = new Date(dateTimeString.getTime() + 5 * 60000);
+  const updatedDateString = updatedDateTime.toISOString().split("T")[0];
+  const updatedTimeString = updatedDateTime.toTimeString().split(" ")[0];
+  return {
+    timeStamp: `${updatedDateString} ${updatedTimeString}`,
+    date: updatedDateString,
+    minute_window: updatedTimeString.substring(0, 5),
+  };
+};
+
 const generateXaxis = () => {
   var startTime = new Date();
   startTime.setHours(0, 0, 0, 0);
@@ -205,6 +216,35 @@ const PowerSourceChart = () => {
             color: getColor(sourceTag),
           },
         });
+
+        if (index !== chartData.length - 1) {
+          const currentDate = new Date(timeStamp);
+          const nextDataPoint = chartData[index + 1];
+          const nextDate = new Date(nextDataPoint.timeStamp);
+          const timeDifference = Math.abs(
+            nextDate.getTime() - currentDate.getTime()
+          );
+          if (timeDifference > 300000) {
+            const missingDataPoints = Math.floor(timeDifference / 300000) - 1;
+            let previousDate=currentDate;
+            for (let i = 1; i <= missingDataPoints; i++) {
+              const nextXTime = generateMissingData(previousDate);
+              dataPoints.push({
+                value: [
+                  nextXTime.minute_window,
+                  nextXTime.date,
+                  "empty",
+                  nextXTime.timeStamp,
+                ],
+                symbol: "rect",
+                itemStyle: {
+                  color: getColor("empty"),
+                },
+              });
+              previousDate=new Date(nextXTime.timeStamp);
+            }
+          }
+        }
       }
       option.yAxis.data = yAxisData;
       option.series[0].data = dataPoints;
