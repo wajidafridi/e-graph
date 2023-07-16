@@ -28,8 +28,41 @@ const PowerSourceChart = () => {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-    // to do fetch data from follow api
-    // https://api.thunder.softoo.co/vis/api/dashboard/ssu/fixed
+    const processData = (data) => {
+      const processedData = data.map((item) => {
+        const dateTimeParts = item.minute_window.split(" ");
+        const date = dateTimeParts[0];
+        const time = dateTimeParts[1].substring(0, 5);
+        const sourceTag = item.sourceTag;
+        return {
+          date,
+          minute_window: time,
+          sourceTag,
+          timeStamp: item.minute_window,
+        };
+      });
+
+      return processedData;
+    };
+
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://api.thunder.softoo.co/vis/api/dashboard/ssu/fixed"
+        );
+        const jsonData = await response.json();
+        const { data, status } = jsonData;
+
+        if (status === "success" && data.length > 0) {
+          const processedData = processData(data);
+          setChartData(processedData);
+        }
+      } catch (error) {
+        console.log("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const generateOption = () => {
